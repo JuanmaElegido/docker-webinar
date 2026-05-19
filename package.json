@@ -1,0 +1,22 @@
+{
+  "name": "docker-webinar",
+  "version": "1.0.0",
+  "description": "Aplicación demo para webinar Docker + Cloud",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "NODE_ENV=development node server.js"
+  },
+  "keywords": [
+    "docker",
+    "webinar",
+    "nodejs",
+    "compose"
+  ],
+  "author": "Juan Manuel C. Elegido",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.3",
+    "pg": "^8.11.5"
+  }
+}

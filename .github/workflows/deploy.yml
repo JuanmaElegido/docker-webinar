@@ -1,0 +1,55 @@
+name: Deploy to IONOS VPS
+
+on:
+  push:
+    branches: [main]
+
+env:
+  IMAGE_NAME: ${{ vars.IMAGE_NAME }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.GHCR_USER }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      - name: Build and push Docker image
+        run: |
+          docker build \
+            -t $IMAGE_NAME:${{ github.sha }} \
+            -t $IMAGE_NAME:latest \
+            .
+          docker push $IMAGE_NAME:${{ github.sha }}
+          docker push $IMAGE_NAME:latest
+
+      - name: Deploy to IONOS VPS
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: webinar
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GHCR_USER }}" --password-stdin
+            docker pull ${{ vars.IMAGE_NAME }}:${{ github.sha }}
+            docker stop mi-app || true
+            docker rm mi-app || true
+            docker run -d \
+              -p 80:3000 \
+              --name mi-app \
+              --restart unless-stopped \
+              -e NODE_ENV=production \
+              -e APP_VERSION=${{ github.sha }} \
+              ${{ vars.IMAGE_NAME }}:${{ github.sha }}
