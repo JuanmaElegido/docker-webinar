@@ -6,7 +6,7 @@ const port = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
   res.json({
-    message: process.env.MESSAGE || "Hola mundo desde Docker v2",
+    message: process.env.MESSAGE || "Hola mundo desde Docker v2 ",
     environment: process.env.NODE_ENV || "development",
     version: process.env.APP_VERSION || "local",
     timestamp: new Date().toISOString()
