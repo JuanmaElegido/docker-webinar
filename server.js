@@ -16,7 +16,7 @@ async function getPool() {
 
 app.get("/", (req, res) => {
   res.json({
-    message: "Hola desde Docker en IONOS 🚀",
+    message: "Hola desde Docker en mi VPS",
     environment: process.env.NODE_ENV || "development",
     database_enabled: hasDatabaseConfig(),
     timestamp: new Date().toISOString(),
